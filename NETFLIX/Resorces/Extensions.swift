@@ -1,3 +1,6 @@
+
+// Делаем первую букву большой в HomeView контроллере
+
 import Foundation
 
 extension String {

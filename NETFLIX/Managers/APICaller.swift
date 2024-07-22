@@ -149,11 +149,11 @@ class APICaller {
         
         task.resume()
     }
-        
+    
     // Функция для Get Discover Movies (чтобы в окне с поиском было то что ищем)
     func search(with query: String, completion: @escaping (Result<[Title], Error>) -> Void) {
         
-        guard let quary = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
         
         // это для того чтобы ОТОБРАЖАЛСЯ фильм который ищешь
         guard let url = URL(string: "\(Constants.baseURL)/3/search/movie?api_key=\(Constants.API_KEY)&query=\(query)") else {
@@ -180,10 +180,29 @@ class APICaller {
         task.resume()
     }
     
+    // Обращаемся к Ютубу через Апишку чтобы вытягивать видео
     func getMovie(with query: String) {
-        let url = URL(string: "\(Constants.YoutubeBaseURL)q=Harry&key=[YOUR_API_KEY]") // Constants - это структура
+        
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
+        guard let url = URL(string: "\(Constants.YoutubeBaseURL)q=\(query)&key=\(Constants.YoutubeAPI_KEY)") else // Constants - это структура
+            { return }
+        let task = URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
+            guard let data = data, error == nil else {
+                return
+                
+            }
+                
+            do {
+                let results = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
+                print(results)
+                
+            } catch {
+                print(error.localizedDescription)
+                }
+            }
+            task.resume()
+            
+            
+        }
     }
-    
-    
-}
 
